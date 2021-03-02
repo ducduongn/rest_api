@@ -79,48 +79,66 @@ student_schema = StudentSchema()
 students_schema = StudentSchema(many=True)
 
 
-class StudentListResource(Resource):
-    def get(self):
-        students = Student.query.all()
-        return students_schema.dump(students)
+# class StudentListResource(Resource):
+#     def get(self):
+#         students = Student.query.all()
+#         return students_schema.dump(students)
 
-    def post(self):
-        new_student = Student(
-            dob=request.json['dob'],
-            sid=request.json['sid'],
-            description=request.json['description']
-        )
-        db.session.add(new_student)
-        db.session.commit()
-        return student_schema.dump(new_student)
+#     def post(self):
+#         new_student = Student(
+#             dob=request.json['name'],
+#             sid=request.json['sid'],
+#             contacts=request.json['contacts'],
+#             contacts=request.json['contacts'],
+#             contacts=request.json['contacts'],
+#         )
+#         db.session.add(new_student)
+#         db.session.commit()
+#         return student_schema.dump(new_student)
 
 
-class StudentResource(Resource):
-    def get(self, id):
-        student = Student.query.get_or_404(id)
-        return student_schema.dump(student)
+# class StudentResource(Resource):
+#     def get(self, id):
+#         student = Student.query.get_or_404(id)
+#         return student_schema.dump(student)
 
-    def patch(self, post_id):
-        student = Student.query.get_or_404(post_id)
+#     def patch(self, post_id):
+#         student = Student.query.get_or_404(post_id)
 
-        if 'title' in request.json:
-            post.title = request.json['title']
-        if 'content' in request.json:
-            post.content = request.json['content']
+#         if 'title' in request.json:
+#             post.title = request.json['title']
+#         if 'content' in request.json:
+#             post.content = request.json['content']
 
-        db.session.commit()
-        return students_schema.dump(student)
+#         db.session.commit()
+#         return students_schema.dump(student)
 
-    def delete(self, post_id):
-        student = Student.query.get_or_404(post_id)
-        db.session.delete(post)
-        db.session.commit()
-        return '', 204
+#     def delete(self, post_id):
+#         student = Student.query.get_or_404(post_id)
+#         db.session.delete(post)
+#         db.session.commit()
+#         return '', 204
 
-# api end-point
-api.add_resource(StudentListResource, '/students')
-api.add_resource(StudentResource, '/students/<int:id>')
+# # api end-point
+# api.add_resource(StudentListResource, '/students')
+# api.add_resource(StudentResource, '/students/<int:id>')
 
+@app.route('/students')
+def get_all():
+    students = Student.query.all()
+
+    output = []
+
+    for student in students:
+        stu_data = {'sid': student.sid,
+                    'name':student.name,
+                    'dob':student.dob,
+                    'gender':student.gender,
+                    'emails':student.email,
+                    'contacts':student.contacts}
+        output.append(stu_data)
+    return {'students': output}
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
