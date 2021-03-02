@@ -4,20 +4,38 @@ from flask_marshmallow import Marshmallow
 from flask_restful import Api, Resource
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 api = Api(app)
 
+class Contact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    contact_name = db.Column(db.String(20))
+    contact_addr = db.Column(db.String(50))
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
 
-# class Name(db.Model):
-#     first = db.Column(db.String(20))
-#     last = db.Column(db.String(20))
+class Name(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first = db.Column(db.String(20))
+    last = db.Column(db.String(20))
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+
+class Emails(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    vnu_email = db.Column(db.String(40))
+    other_email = db.Column(db.String(40))
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    dob = db.Column(db.String(10))
+    name = db.relationship("Name", uselist=False, backref="student")
     sid = db.Column(db.String(8))
+    dob = db.Column(db.String(10))
+    gender = db.Column(db.String(10))
+    emails = db.relationship("Emails", uselist=False, backref="student")
+    contacts = db.relationship("Contacts", backref="student")
 
     # name = Name
     description = db.Column(db.String(255))
@@ -25,12 +43,29 @@ class Student(db.Model):
     def __repr__(self):
         return '<Post %s>' % self.title
 
+class NameSchema(ma.Schema):
+    class Meta:
+        model = Name
+        fields = ("first", "last")
 
+class EmailsSchema(ma.Schema):
+    class Meta:
+        model = Emails
+        fields = ("vnu_email", "other_email")
+
+class ContactSchema(ma.Schema):
+    class Meta:
+        model = Contact
+        fields = ("contact_name", "contact_addr")
 
 class StudentSchema(ma.Schema):
+    name = NameSchema()
+    emails = EmailsSchema()
+    contacts = ContactSchema(many=True)
+
     class Meta:
         model = Student
-        fields = ("id", "dob", "sid", "description")
+        fields = ("id", "sid", "name", "dob", "gender", "emails", "contacts")
 
 
 student_schema = StudentSchema()
@@ -50,7 +85,7 @@ class StudentListResource(Resource):
         )
         db.session.add(new_student)
         db.session.commit()
-        return students_schema.dump(new_student)
+        return student_schema.dump(new_student)
 
 
 class StudentResource(Resource):
@@ -75,7 +110,7 @@ class StudentResource(Resource):
         db.session.commit()
         return '', 204
 
-
+# api end-point
 api.add_resource(StudentListResource, '/students')
 api.add_resource(StudentResource, '/students/<int:id>')
 
