@@ -11,31 +11,38 @@ ma = Marshmallow(app)
 api = Api(app)
 
 class Contact(db.Model):
+    __tablename__ = 'contact'
     id = db.Column(db.Integer, primary_key=True)
     contact_name = db.Column(db.String(20))
     contact_addr = db.Column(db.String(50))
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+    student_id= db.Column(db.Integer, db.ForeignKey('student.id'))
+    student = db.relationship("Student", backref="contacts")
 
 class Name(db.Model):
+    __tablename__ = 'name'
     id = db.Column(db.Integer, primary_key=True)
     first = db.Column(db.String(20))
     last = db.Column(db.String(20))
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+    student_id= db.Column(db.Integer, db.ForeignKey('student.id'))
+    student = db.relationship("Student", backref="name")
 
-class Emails(db.Model):
+class Email(db.Model):
+    __tablename__ = 'emails'
     id = db.Column(db.Integer, primary_key=True)
     vnu_email = db.Column(db.String(40))
     other_email = db.Column(db.String(40))
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+    student_id= db.Column(db.Integer, db.ForeignKey('student.id'))
+    student = db.relationship("Student", backref="email")
+
+
 
 class Student(db.Model):
+    __tablename__ = 'student'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.relationship("Name", uselist=False, backref="student")
     sid = db.Column(db.String(8))
     dob = db.Column(db.String(10))
     gender = db.Column(db.String(10))
-    emails = db.relationship("Emails", uselist=False, backref="student")
-    contacts = db.relationship("Contacts", backref="student")
+  
 
     # name = Name
     description = db.Column(db.String(255))
@@ -50,7 +57,7 @@ class NameSchema(ma.Schema):
 
 class EmailsSchema(ma.Schema):
     class Meta:
-        model = Emails
+        model = Email
         fields = ("vnu_email", "other_email")
 
 class ContactSchema(ma.Schema):
