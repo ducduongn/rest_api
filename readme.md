@@ -16,5 +16,5 @@ Có cài đặt pipenv
 > <code>>> db.create_all()</code>  
 > <code>>> exit()</code>  
 3. Runserver
-> <code>python manage.py runserver</code>  
+> <code>python main.py</code>  
 
