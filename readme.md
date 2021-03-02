@@ -1,9 +1,5 @@
 ## Installation
 
-### Chuẩn bị dev-env backend
-**Yêu cầu**  
-Có cài đặt pipenv
-
 **Các bước**  
 1. Tạo virtual env và cài các package cần thiết, rồi activate env đó
 > <code>python3 -m venv venv</code> 
