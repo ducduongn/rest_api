@@ -6,7 +6,7 @@ Có cài đặt pipenv
 
 **Các bước**  
 1. Dùng pipenv tạo virtual env và cài các package cần thiết, rồi activate env đó
-> <code>~~python3 -m venv venv~~</code> 
+> <code>python3 -m venv venv</code> 
 > <code>\Python27\Scripts\virtualenv.exe venv</code>  
 > <code>venv\Scripts\activate</code>  
 > <code>pip install -r requirements.txt</code>  
